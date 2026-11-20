@@ -41,7 +41,7 @@ function customersHTML(){
     <div class="row"><input id="q" type="search" placeholder="Search name, phone, email" value="${esc(qCust)}" style="width:240px">${can('customers','edit')?'<button class="btn primary" id="newC">New customer</button>':''}</div></header>
     <div class="list">${list.length?list.map(c=>{const mine=S.invoices.filter(i=>i.customerId===c.id),owe=mine.reduce((a,i)=>a+money(i).bal,0),inv=can('invoices'),ed=can('customers','edit');
       const contact=[c.phone||'No phone',c.email,c.instagram&&'@'+c.instagram].filter(Boolean).map(esc).join(' · ');
-      return `<div class="item"><div class="main"><b>${esc(c.name)}</b><span class="sub">${contact}</span>${inv?`<span class="sub">${mine.length} invoice${mine.length===1?'':'s'}${owe>0.004?` · <span class="dueamt">Balance ${inr(owe)}</span>`:''}</span>`:''}</div>
+      return `<div class="item"><div class="main"><b>${esc(c.name)}${sampleTag(c)}</b><span class="sub">${contact}</span>${inv?`<span class="sub">${mine.length} invoice${mine.length===1?'':'s'}${owe>0.004?` · <span class="dueamt">Balance ${inr(owe)}</span>`:''}</span>`:''}</div>
       <div class="row">${can('invoices','edit')?`<button class="btn sm" data-bill="${c.id}">Bill</button>`:''}${ed?`<button class="btn sm" data-edit="${c.id}">Edit</button><button class="btn sm danger" data-del="${c.id}">Delete</button>`:''}</div></div>`}).join('')
       :`<div class="empty">No customers yet. Choose New customer to add one.</div>`}</div>`;
 }

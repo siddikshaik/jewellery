@@ -30,8 +30,8 @@ function createDb(dataDir) {
     newId,
     readCol: (sid, name) => readJson(colFile(sid, name), null),
     writeCol: (sid, name, v) => writeJson(colFile(sid, name), v),
-    createStore(name) {
-      const s = { id: newId(), name, active: true, createdAt: new Date().toISOString() };
+    createStore(name, license) {
+      const s = { id: newId(), name, active: true, createdAt: new Date().toISOString(), license: license || { plan: 'licensed', expiresAt: '', maxUsers: 2, note: '' } };
       db.saveStores([...db.stores(), s]);
       db.writeCol(s.id, 'settings', { store: { name } });
       return s;
@@ -47,7 +47,7 @@ function createDb(dataDir) {
     LEGACY.forEach(n => { const f = path.join(dataDir, n + '.json'); const v = readJson(f); if (v != null) { parts[n] = v; moved.push(f); } });
     if (!Object.keys(parts).length) return;
     const nm = (parts.settings && ((parts.settings.store && parts.settings.store.name) || parts.settings.name)) || 'Main store';
-    const s = { id: newId(), name: nm, active: true, createdAt: new Date().toISOString() };
+    const s = { id: newId(), name: nm, active: true, createdAt: new Date().toISOString(), license: { plan: 'licensed', expiresAt: '', maxUsers: 2, note: 'Existing store, no expiry set' } };
     db.saveStores([s]);
     Object.entries(parts).forEach(([n, v]) => db.writeCol(s.id, n, v));
     const keep = path.join(dataDir, 'legacy'); fs.mkdirSync(keep, { recursive: true });
@@ -55,6 +55,13 @@ function createDb(dataDir) {
     console.log(`Moved existing data into store "${nm}" (originals kept in data/legacy/)`);
   }
   migrateLegacy();
+  /* stores made before licences existed keep working: no expiry, and room for the people they already have */
+  const stores = db.stores();
+  if (stores.some(s => !s.license)) {
+    const users = db.users();
+    stores.forEach(s => { if (!s.license) s.license = { plan: 'licensed', expiresAt: '', maxUsers: Math.max(2, users.filter(u => u.storeId === s.id && u.active).length), note: 'Existing store, no expiry set' }; });
+    db.saveStores(stores);
+  }
   return db;
 }
 module.exports = { createDb };

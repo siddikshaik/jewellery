@@ -57,6 +57,9 @@ body.locked #view{max-width:none;padding:0}
 .nav-label small{text-transform:none;letter-spacing:0;font-weight:500;color:var(--warn)}
 .monitor{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;background:var(--warn-soft);color:var(--warn);border-radius:14px;padding:10px 16px;margin-bottom:22px;font-size:14px}
 .monitor a{font-weight:600}
+.monitor.license-bad{background:var(--bad-soft);color:var(--bad)}
+.gate-alt{font-size:14px;color:var(--muted);margin:0}
+.gate-alt .link{font-weight:600}
 @media (max-width:820px){
   .who{display:none}
   .nav-label{display:none}

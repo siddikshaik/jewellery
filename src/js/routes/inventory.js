@@ -33,7 +33,7 @@ function inventoryHTML(){
   const row=x=>{const s=x.s,inv=x.sold?soldBy(s.id):null;
     return`<div class="item" data-open="${esc(s.tag)}" role="link" tabindex="0">
       <label class="check sel"><input type="checkbox" data-sel="${s.id}"${tagSel.has(s.id)?' checked':''} aria-label="Select ${esc(s.tag)}"></label>
-      <div class="main"><b>${esc(s.tag)} · ${esc(s.name||s.category)}</b>
+      <div class="main"><b>${esc(s.tag)} · ${esc(s.name||s.category)}${sampleTag(s)}</b>
       <span class="sub">${esc(s.category)} · ${esc(s.metal)} ${esc(hallmarkMark(s.metal,s.purity))} · gross ${wt(num(s.gross))} g · net ${wt(stockNet(s))} g${s.notes?' · '+esc(s.notes):''}</span></div>
       <div class="row">${s.huid?`<span class="pill huid">HUID ${esc(s.huid)}</span>`:needsHuid(s)?'<span class="pill part">No HUID</span>':''}
       ${x.sold?`<span class="pill due">Sold${inv?' · '+esc(inv.no):''}</span>`:'<span class="pill paid">In stock</span>'}

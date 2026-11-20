@@ -1,5 +1,20 @@
 # Changelog
 
+## 10 - Sample data
+- Store owners can load a sample set (customers, suppliers, purchases, stock with HUIDs, invoices over several months) and remove it, from one place: **Settings → Sample data** (owner only; no banner or card on any other page). It asks for the 24K gold rate and the silver rate only; 22K (92%) and 18K (75%) are calculated and can be overridden later in Settings → Rates.
+- Sample records carry `sample: true` and show a "Sample" tag. "Remove sample data" deletes only those, and keeps (unflags) any sample customer, supplier, piece or bill that the owner's own records use. New file `src/js/sample.js`. No server change, no migration.
+- The "remove sample data" confirmation is forgotten when you leave the page.
+- Tests: `test/smoke.js` checks the rate rule, the shape and variety of the data, that every analytics tab is clean on it, and removal with and without dependent real records.
+
+## 9 - Sign-up, licences, user limits, email and phone
+- **Store sign-up** (`POST /api/auth/signup`): anyone can create a store and becomes its owner. Free trial of one month and 2 users. Rate-limited (5 per hour per address), `SIGNUP=off` turns it off.
+- **Email and phone** on every user: required for new accounts, unique platform-wide (email case-insensitive, phone normalised to 10 digits). Sign in with username, email or phone. People edit their own details (`PATCH /api/auth/me`); older accounts may stay without until edited.
+- **Licences** on stores (`stores.json`): plan, valid-until, users allowed, note. After expiry the store is read-only (server refuses writes with `license_expired`; the app locks forms and shows a banner with the super admin's contact). Banners a week before. The app re-checks every 20 seconds.
+- **User limit**: default 2 turned-on people per store, owner included; refused with `user_limit`. Super admin changes it, extends or sets dates per store (Stores → License).
+- Role `admin` is now labelled **Store owner**.
+- Stores created before this get no expiry and room for their current people (`server/db.js`). New `monthsFromToday` and `extendMonths` license options.
+- Tests: `test/api.js` covers sign-up, uniqueness, limits, expiry and renewal; `test/smoke.js` covers the locked mode, banners and the three sign-in screens.
+
 ## 8 - Purchases, HUID, QR tags, analytics tabs
 - **Purchases module**: suppliers and purchase bills (Piece and Metal lines, supplier GST, other charges, payments to supplier). Bills can add pieces to Inventory in one step. New collections `suppliers` and `purchases`, new permission area `purchases` for store users. Purchase math shares `sheetMath()` with invoices, so there is still one set of rules.
 - **HUID**: `huid` on stock pieces and invoice items (6 capital letters or digits, unique per store, checked on the server). Copied from the piece onto the invoice line; printed on the sheet, PDF and WhatsApp text. Gold without a HUID is flagged; an optional setting blocks billing it. Hallmark purity marks (22K916 and so on) are derived.

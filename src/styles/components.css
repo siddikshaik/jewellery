@@ -43,6 +43,9 @@ input[type=file]{padding:8px}
 .pill.paid{background:var(--good-soft);color:var(--good)}
 .pill.due{background:var(--bad-soft);color:var(--bad)}
 .pill.part{background:var(--warn-soft);color:var(--warn)}
+.pill.sample{background:var(--fill);color:var(--muted);margin-left:6px;vertical-align:middle}
+.sample-card{border:1px dashed color-mix(in srgb,var(--accent) 45%,var(--line))}
+.sample-banner{background:var(--accent-soft);color:var(--accent)}
 
 /* segmented control (buttons or links) */
 .seg{display:inline-flex;flex-wrap:wrap;gap:2px;background:var(--fill);border-radius:10px;padding:2px;max-width:100%}

@@ -46,7 +46,7 @@ function bindPayForm(inv){
 function rowHTML(x){
   const i=x.i,c=custOf(i.customerId),m=money(i),open=m.bal>0.004;
   return `<div class="invwrap"><div class="item" data-id="${i.id}" role="link" tabindex="0">
-    <div class="main"><b>${esc(i.no)} · ${esc(c?.name||'No customer')}</b><span class="sub">${dmy(i.date)} · ${i.items.length} item${i.items.length>1?'s':''}${m.paid>0&&open?' · Paid '+inr(m.paid):''}</span></div>
+    <div class="main"><b>${esc(i.no)} · ${esc(c?.name||'No customer')}${sampleTag(i)}</b><span class="sub">${dmy(i.date)} · ${i.items.length} item${i.items.length>1?'s':''}${m.paid>0&&open?' · Paid '+inr(m.paid):''}</span></div>
     <div class="row"><span class="pill ${pillCls(x.st)}">${x.st}</span><span class="amt">${inr(m.total)}</span>${open?`<span class="dueamt">Balance ${inr(m.bal)}</span>`:''}</div>
     ${open&&can('invoices','edit')?`<div class="row"><button class="btn sm" data-markpaid="${i.id}">Mark paid</button><button class="btn sm" data-pay="${i.id}">${payOpen===i.id?'Close':'Record payment'}</button></div>`:''}</div>
     ${payOpen===i.id?`<div class="payform">${payFormHTML(i)}</div>`:''}</div>`;

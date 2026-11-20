@@ -10,7 +10,7 @@ Read this file first. Deeper detail lives in `docs/` and `.claude/skills/`.
 ```
 src/index.html          Page shell: sidebar, #view, toast. Scripts are injected at build.
 src/styles/             base.css (tokens, type) · layout.css (shell, sign-in) · components.css · invoice-sheet.css
-src/js/                 util · qr · calc · data · storage · router · auth · pdf · main
+src/js/                 util · qr · calc · data · storage · router · auth · sample · pdf · main
 src/js/routes/          invoices · customers · inventory · purchases (+ suppliers) · item (details, scan, tags) · analytics · settings · users · stores
 scripts/build.js        Joins src/ into one standalone page: public/index.html (order is listed in build.js).
 server.js               Entry point: serves the page and the API.
@@ -30,14 +30,14 @@ npm start       # build + serve on http://localhost:3000 (PORT, HOST, DATA_DIR e
 npm test        # smoke test + API test, no browser needed
 ```
 
-First start: the page asks for a super admin account. An older single-store install in `data/` is moved into a first store automatically.
+First start: the page asks for a super admin account (name, email, phone, username, password). Anyone can then open a store from the sign-in screen (`SIGNUP=off` disables that). An older single-store install in `data/` is moved into a first store automatically.
 
 ## Roles (enforced in `server/api.js`, mirrored in `can()` in `src/js/auth.js`)
 
 | Role | Can |
 | --- | --- |
-| Super admin | Add stores, add and edit users in every store, turn stores off. Opens any store **read-only** (settings, invoices, customers, inventory, analytics). Never edits store data. |
-| Store admin | Everything in their own store, including settings, rates and their store's users (store users only). |
+| Super admin | Add stores, add and edit users in every store, turn stores off, set each store's **license** (valid-until, users allowed, plan). Opens any store **read-only** (settings, invoices, customers, inventory, analytics). Never edits store data. |
+| Store owner (role `admin`) | Everything in their own store, including settings, rates and their store's users (store users only). Made by public sign-up (one-month trial, 2 users) or by the super admin. |
 | Store user | Per area **None / View / Edit** for Invoices, Customers, Inventory, Purchases (suppliers included). Analytics shows the tabs whose data the person can see. No settings, no users. Invoice users always get customer names, rates and settings to read. |
 
 ## Hard rules
@@ -59,6 +59,9 @@ First start: the page asks for a super admin account. An older single-store inst
 15. **A QR code carries a link, not a key.** `tagPayload()` builds it (`<app address>/#/item/<tag>?s=&h=&g=&n=&p=`); the page it opens shows the live record and must still require sign-in. Nothing secret goes inside a QR.
 16. **A piece's cost and margin are derived** from its purchase line (`pieceCost`). Do not store cost on the piece.
 17. **Passwords are scrypt hashes; sessions are signed HttpOnly cookies.** Never log, return or store a password or hash outside `data/platform/users.json`.
+18. **A store's licence is enforced on the server.** Expired = read-only: `server/api.js` refuses store-data writes and new or re-enabled users (`license_expired`), and `can()` in `auth.js` caps every area at view (`licenseLocked()`). Seats: `seatProblem()` (`user_limit`). Never check the licence only in the UI. The super admin is exempt from expiry. `expired`, `daysLeft`, `usedUsers` are computed, not stored.
+19. **Email and phone are unique per account, platform-wide.** Use `checkContact()` / `applyContact()` in `server/api.js` for any path that sets them (normalised: email lowercase, phone 10 digits); a value once set cannot be blanked.
+20. **Sample data is the owner's playground, never mixed with real data.** Every sample record has `sample:true` (`src/js/sample.js`). Its only screen is Settings → Sample data (owner only): do not add banners, cards or buttons for it on other pages. Removal deletes only flagged records and unflags any that real records depend on. Anything new that refers to another record (a customer, piece, bill, supplier) must be added to the keep rules in `removeSample()`. The 22K and 18K rates in the sample form are 92% and 18K 75% of 24K.
 
 ## Business rules (short form)
 

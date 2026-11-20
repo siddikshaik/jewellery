@@ -5,7 +5,7 @@ const { createDb } = require('./server/db'), { createApi } = require('./server/a
 
 function createApp(opts = {}) {
   const dataDir = opts.dataDir || process.env.DATA_DIR || path.join(__dirname, 'data');
-  const api = createApi(createDb(dataDir), { dataDir });
+  const api = createApi(createDb(dataDir), { dataDir, ...(opts.signupOpen === undefined ? {} : { signupOpen: opts.signupOpen }) });
   return http.createServer(async (req, res) => {
     try {
       if (await api(req, res)) return;

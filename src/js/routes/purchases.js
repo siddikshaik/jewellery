@@ -44,7 +44,7 @@ function purchasesHTML(){
   const list=all.filter(x=>(purFilter==='all'||x.st===purFilter)&&(!q||x.p.no.toLowerCase().includes(q)||(x.p.billNo||'').toLowerCase().includes(q)||(supplierOf(x.p.supplierId)?.name||'').toLowerCase().includes(q)))
     .sort((a,b)=>b.p.date.localeCompare(a.p.date)||b.p.no.localeCompare(a.p.no));
   const row=x=>{const p=x.p,s=supplierOf(p.supplierId),m=pmoney(p),open=m.bal>0.004;
-    return`<div class="item" data-id="${p.id}" role="link" tabindex="0"><div class="main"><b>${esc(p.no)} · ${esc(s?.name||'No supplier')}</b>
+    return`<div class="item" data-id="${p.id}" role="link" tabindex="0"><div class="main"><b>${esc(p.no)} · ${esc(s?.name||'No supplier')}${sampleTag(p)}</b>
       <span class="sub">${dmy(p.date)} · ${p.items.length} line${p.items.length===1?'':'s'}${p.billNo?' · bill '+esc(p.billNo):''}${m.paid>0&&open?' · Paid '+inr(m.paid):''}</span></div>
       <div class="row">${pillOf(x.st)}<span class="amt">${inr(m.total)}</span>${open?`<span class="dueamt">To pay ${inr(m.bal)}</span>`:''}</div></div>`};
   return`<header class="page"><div><h1>Purchases</h1><p class="sub">What you buy from suppliers and what you still owe them.</p></div>${edit?'<button class="btn primary" id="newPur">New purchase</button>':''}</header>
@@ -218,7 +218,7 @@ function suppliersHTML(){
     <div class="row"><input id="q" type="search" placeholder="Search name, phone, GSTIN" value="${esc(qSup)}" style="width:240px">${edit?'<button class="btn primary" id="newSup">New supplier</button>':''}</div></header>
   ${purTabs('suppliers')}
   <div class="list">${list.length?list.map(s=>{const mine=S.purchases.filter(p=>p.supplierId===s.id),owe=mine.reduce((a,p)=>a+pmoney(p).bal,0);
-    return`<div class="item"><div class="main"><b>${esc(s.name)}</b><span class="sub">${esc(s.type||'')}${s.phone?' · '+esc(s.phone):''}${s.gstin?' · GSTIN '+esc(s.gstin):''}</span>
+    return`<div class="item"><div class="main"><b>${esc(s.name)}${sampleTag(s)}</b><span class="sub">${esc(s.type||'')}${s.phone?' · '+esc(s.phone):''}${s.gstin?' · GSTIN '+esc(s.gstin):''}</span>
       <span class="sub">${mine.length} purchase${mine.length===1?'':'s'}${owe>0.004?` · <span class="dueamt">To pay ${inr(owe)}</span>`:''}</span></div>
       ${edit?`<div class="row"><button class="btn sm" data-edit="${s.id}">Edit</button><button class="btn sm danger" data-del="${s.id}">Delete</button></div>`:''}</div>`}).join(''):'<div class="empty">No suppliers yet.'+(edit?' Choose New supplier to add one.':'')+'</div>'}</div>`;
 }

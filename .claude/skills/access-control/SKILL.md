@@ -8,9 +8,17 @@ description: Sign-in, roles, stores and permissions in the jewellery billing app
 ## Model
 
 - `data/platform/users.json`: `{id, username, name, role, storeId, perms, active, passwordHash}`. Roles: `superadmin` (no store), `admin` (one store), `user` (one store, `perms` = `{invoices, customers, inventory, purchases}` each `none|view|edit`).
-- `data/platform/stores.json`: `{id, name, active}`. Inactive store = its people cannot sign in and existing sessions stop working (checked on every request in `currentUser()`).
+- `data/platform/stores.json`: `{id, name, active, license:{plan, expiresAt, maxUsers, note}}`. Inactive store = its people cannot sign in and existing sessions stop working (checked on every request in `currentUser()`).
 - Session: cookie `jb` = base64url payload `{u: userId, exp}` + `.` + HMAC-SHA256 with `data/platform/secret.key`. HttpOnly, SameSite=Lax, 12 hours, `Secure` when the request came over HTTPS. The user record is re-read on every request, so role changes, switch-offs and password changes take effect immediately.
 - Passwords: scrypt with a random salt (`server/auth.js`). Login always runs a hash comparison (a dummy one for unknown users) and is throttled per username and address.
+
+## Licence, seats, sign-up, contact details
+
+- `licenseOf(store)` in `server/api.js` computes `expired`, `daysLeft`, `usedUsers` from the stored `license`. **Expired = read-only**: store-data PUT/DELETE and user create / re-enable return 403 `license_expired`; the super admin is exempt. Seat limit: `seatProblem()` returns 403 `user_limit` when turned-on people have reached `maxUsers` (owner included).
+- The browser mirrors it: `licenseLocked()` caps `level()` at view, `seatInfo()` drives the Add user button, `licenseBannerHTML()` the banner, `refreshMe()` re-checks every poll (20 s).
+- `POST /api/auth/signup` makes a store and its owner (`role: 'admin'`) with a one-month trial and 2 users; limited to 5 per hour per address; `SIGNUP=off` or `createApp({signupOpen:false})` disables it; refused until a super admin exists.
+- Email and phone: `checkContact()` (new accounts: required) and `applyContact()` (edits: cannot blank a value that exists). Unique across all accounts after normalising. Login accepts username, email or phone.
+- Only the super admin edits licences (`PATCH /api/stores/<id>`), via `applyLicense()`.
 
 ## The one place that decides
 

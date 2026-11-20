@@ -29,7 +29,9 @@ Why split: rates change daily, invoices on every sale, settings almost never. Li
 ```jsonc
 [ { "id": "9f2c1a7b", "username": "alice",            // lowercase, unique across all stores
     "name": "Alice Admin",
-    "role": "admin",                                   // superadmin | admin | user
+    "email": "alice@example.com",                      // lowercase, unique across all accounts. Required for new accounts; accounts made before this existed may have ""
+    "phone": "9876543210",                             // 10 digits (+91, spaces, dashes and a leading 0 are removed), unique across all accounts
+    "role": "admin",                                   // superadmin | admin (shown as "Store owner") | user
     "storeId": "3b8e51d0",                             // null for superadmin
     "perms": { "invoices": "edit", "customers": "view", "inventory": "none", "purchases": "none" },   // only for role "user": none | view | edit
     "active": true, "createdAt": "2026-11-15T10:00:00.000Z",
@@ -39,9 +41,19 @@ Why split: rates change daily, invoices on every sale, settings almost never. Li
 ## stores.json
 
 ```jsonc
-[ { "id": "3b8e51d0", "name": "Alpha Jewels", "active": true, "createdAt": "2026-11-15T10:00:00.000Z" } ]
+[ { "id": "3b8e51d0", "name": "Alpha Jewels", "active": true, "createdAt": "2026-11-15T10:00:00.000Z",
+    "license": { "plan": "trial",                      // trial | licensed (a label; the dates and limits do the work)
+                 "expiresAt": "2026-12-20",            // valid through the end of this day; "" = no expiry
+                 "maxUsers": 2,                        // people who are turned on, owner included
+                 "note": "Free trial from sign-up" } } ]  // free text, only the super admin sees it
 ```
 A store that is turned off (`active: false`) signs out and blocks all of its people. Nothing is ever deleted by the app.
+
+**Licence rules** (computed by the server, `licenseOf()`; `expired`, `daysLeft` and `usedUsers` are not stored):
+- Sign-up creates a store with `plan: "trial"`, `expiresAt` one month from that day, `maxUsers: 2`. A store the super admin creates defaults to the same unless they choose otherwise.
+- After `expiresAt` the store is **read-only**: people can sign in, read everything and download a backup, but every write to store data and every new or re-enabled user is refused (`license_expired`). The super admin is never affected.
+- `usedUsers` counts people who are turned on. A new or re-enabled person beyond `maxUsers` is refused (`user_limit`). Turning someone off frees a place.
+- Only the super admin changes a licence (`PATCH /api/stores/<id>` with `license`: `plan`, `expiresAt`, `monthsFromToday`, `extendMonths`, `maxUsers`, `note`). `extendMonths` adds to the later of today and the current end date.
 
 ## settings.json
 
@@ -145,6 +157,7 @@ Totals, GST, paid, to-pay and status are computed by `pcalc` / `pmoney` / `pstat
 - Gold purity is one of `24K 22K 18K 14K 9K`. Silver purity is free text from `999 Fine`, `925 Sterling`, `800`.
 - Not stored, always computed: net weight, making weight and amount, totals, GST, paid, balance, status.
 - Dates are `YYYY-MM-DD`. Ids are 8-character random strings.
+- Sample data: records added by "Load sample data" carry `"sample": true` (customers, suppliers, purchases, inventory, invoices). The flag is the only thing that tells them apart; removing the sample deletes exactly those records, except any that other records need, which lose the flag instead. Nothing else in the shape changes and no migration is needed.
 - UI-only state (drafts, filters, the open payment form, who is signed in) is never stored. The light/dark choice is a per-browser setting.
 - The next invoice number, purchase number and stock tag are computed from existing records, never stored.
 - A HUID is `^[A-Z0-9]{6}$`. The server rejects anything else and refuses a second piece with the same HUID in a store.
@@ -154,4 +167,5 @@ Totals, GST, paid, to-pay and status are computed by `pcalc` / `pmoney` / `pstat
 - `normalize()` in `src/js/data.js` accepts the current shape and the old v1 shape (one object whose `settings` held everything flat). It also drops the old `settings.app.theme`.
 - `server/db.js` moves an older single-store install into a first store on start: files straight under `data/` (or one `db.json`) go to `data/stores/<id>/`, the originals are kept in `data/legacy/`. The first sign-in screen then creates the super admin, who adds a store admin for that store.
 - Old invoice items and stock pieces without a `huid` read as `""` (`migrateInvoice`, `migrateStock`). Old settings gain `purchase`, `store.appUrl` and `invoice.requireHuid` from the defaults. Old users without `perms.purchases` read as `none`.
+- `server/db.js` gives every store without a `license` one: no expiry, `maxUsers` = the larger of 2 and the people it already has, so nothing is locked by the upgrade. Users made before email and phone existed keep `""` until edited; a value once set cannot be blanked.
 - `migrateInvoice()` upgrades older invoices (per-item making amount to `makingPct`, `other` to a charge, `status` to a payment).

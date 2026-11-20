@@ -1,12 +1,12 @@
 /* ---------- route: settings (store details, today's rates, invoicing, preferences, data & backup) ---------- */
-const SET_TABS=[['store','Store details'],['rates',"Today's rates"],['invoicing','Invoicing'],['preferences','Preferences'],['data','Data & backup']];
+const SET_TABS=[['store','Store details'],['rates',"Today's rates"],['invoicing','Invoicing'],['preferences','Preferences'],['data','Data & backup'],['sample','Sample data']];
 let pendingRestore=null;
 const SECTIONS={
   store:{html:storeHTML,bind:bindStore},rates:{html:ratesHTML,bind:bindRates},invoicing:{html:invoicingHTML,bind:bindInvoicing},
-  preferences:{html:preferencesHTML,bind:bindPreferences},data:{html:dataHTML,bind:bindData}
+  preferences:{html:preferencesHTML,bind:bindPreferences},data:{html:dataHTML,bind:bindData},sample:{html:sampleSectionHTML,bind:bindSampleUI}
 };
 ROUTES.settings={
-  html(p){if(!SECTIONS[p[0]]){go('settings/store');return null}return settingsHTML(p[0])},
+  html(p){if(!SECTIONS[p[0]]||(p[0]==='sample'&&!sampleAllowed())){go('settings/store');return null}return settingsHTML(p[0])},
   bind(p){SECTIONS[p[0]].bind();if(!can('settings','edit'))lockFields()}
 };
 /* theme is a per-browser choice, not store data */
@@ -23,7 +23,7 @@ function lockFields(){
 }
 function settingsHTML(sec){
   return `<header class="page"><div><h1>Settings</h1><p class="sub">Your store, rates and how the app behaves.</p></div></header>
-  <nav class="seg tabs" aria-label="Settings sections">${SET_TABS.map(([k,l])=>`<a href="#/settings/${k}" aria-current="${k===sec}">${l}</a>`).join('')}</nav>
+  <nav class="seg tabs" aria-label="Settings sections">${SET_TABS.filter(([k])=>k!=='sample'||sampleAllowed()).map(([k,l])=>`<a href="#/settings/${k}" aria-current="${k===sec}">${l}</a>`).join('')}</nav>
   ${can('settings','edit')?'':'<p class="set-note" style="margin:-8px 0 16px">You can look at these settings but not change them.</p>'}
   ${SECTIONS[sec].html()}`;
 }

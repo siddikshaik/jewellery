@@ -65,8 +65,8 @@ function render(){
   const html=def.html(route.parts);
   if(html==null)return;
   const v=$('#view');
-  if(html===LOADING||(!ready&&route.name!=='account')){v.innerHTML=monitorBanner()+'<div class="empty">Loading…</div>';return}
-  v.innerHTML=monitorBanner()+html;
-  if(lastHash!==location.hash){lastHash=location.hash;v.style.animation='none';void v.offsetWidth;v.style.animation='';window.scrollTo&&window.scrollTo(0,0)}
+  if(html===LOADING||(!ready&&route.name!=='account')){v.innerHTML=monitorBanner()+licenseBannerHTML()+'<div class="empty">Loading…</div>';return}
+  v.innerHTML=monitorBanner()+licenseBannerHTML()+html;
+  if(lastHash!==location.hash){lastHash=location.hash;sampleConfirm=false;   /* a half-done "click again to remove" does not survive leaving the page */v.style.animation='none';void v.offsetWidth;v.style.animation='';window.scrollTo&&window.scrollTo(0,0)}
   def.bind(route.parts);
 }

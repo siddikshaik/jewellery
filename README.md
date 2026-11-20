@@ -12,8 +12,8 @@ npm start
 
 Open http://localhost:3000. The first time, the page asks you to create the **super admin**. Then:
 
-1. As super admin, open **Stores → Add store**. Give the store a name and its first store admin.
-2. The store admin signs in, fills in **Settings** (store details, logo, today's rates) and adds their people under **Users**.
+1. **Stores sign themselves up**: on the sign-in screen choose *Create an account*. They get a free month and up to 2 users and become the store owner. (Or, as super admin, use **Stores → Add store**.)
+2. The store owner fills in **Settings** (store details, logo, today's rates) and adds their people under **Users**. Every person needs a unique email and phone number.
 3. For each person choose what they may do with **Invoices**, **Customers**, **Inventory** and **Purchases**: no access, view only, or view and edit.
 
 ### Tags, HUID and QR codes
@@ -27,6 +27,14 @@ Each stock piece has a tag, an optional **HUID** (the 6-character BIS hallmark c
 Purchases: **Purchases → New purchase**, tick *Add to Inventory* on pieces to create stock with their HUID in one step.
 
 The super admin can open any store from **Stores** to watch its settings, invoices, customers, stock and analytics. That view is read-only.
+
+### Sample data
+
+A new store owner can try everything first: open **Settings → Sample data**, enter the **24K gold rate** and the **silver rate**, and the 22K (92% of 24K) and 18K (75% of 24K) rates are worked out for you. You get example customers, suppliers, purchases, stock with HUIDs and invoices, so Analytics has something to show. Sample records are tagged **Sample**; **Remove sample data** (same tab) takes them away, and anything of yours that uses a sample record is kept. Nothing about it shows on the other pages. Change any rate later in Settings → Rates.
+
+### Licences
+
+On **Stores → License** the super admin extends a store (+1, 3, 6, 12 months), sets an exact end date or no expiry, and sets how many people it may have (default 2). When a license ends the store becomes **read-only**: people can still sign in, look and download a backup, and are told to contact the super admin. Renewing takes effect within about 20 seconds for people already signed in. Set `SIGNUP=off` to stop public sign-ups (for example `SIGNUP=off npm start`).
 
 The page loads the PDF library (jsPDF) from a CDN, so PDFs need internet the first time.
 
@@ -47,7 +55,7 @@ Copy the whole `data` folder. A store admin can also download one store's backup
 
 ## Forgotten password
 
-A store admin can set a new password for their users (Users → Edit), and the super admin can do that for anyone. If the super admin is locked out, run this on the computer that hosts the server:
+A store owner can set a new password for their users (Users → Edit), and the super admin can do that for anyone. If the super admin is locked out, run this on the computer that hosts the server:
 
 ```
 node scripts/reset-password.js <username> <new password>

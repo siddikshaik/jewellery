@@ -29,6 +29,7 @@ Read `CLAUDE.md` and `docs/SPEC.md` first. Work in `src/` and `server/`. Never e
 | `js/routes/settings.js` | tabs: store, rates, invoicing, preferences, data and backup; `lockFields()` for read-only |
 | `js/routes/users.js` | users list and form (store admin, super admin) |
 | `js/routes/stores.js` | all stores overview, add store, open read-only (super admin) |
+| `js/sample.js` | sample data: `loadSample(r24, silver)`, `removeSample()`, and the Settings → Sample data section |
 | `js/pdf.js` | `makePDF(inv)` and the `PT` template table |
 | `js/main.js` | start-up (`applyTheme`, `boot`) |
 | `styles/*.css` | `base` (tokens, type), `layout` (shell), `components`, `invoice-sheet` |
@@ -70,6 +71,10 @@ Stock pieces live in `S.inventory`. An invoice item points at one with `stockId`
 ## Purchases, HUID and tags
 
 `pcalc(p)` shares `sheetMath()` with `calc(inv)`, so a purchase line and an invoice line follow identical rules. A bill's Piece line with *Add to Inventory* creates a stock piece on save and stores `stockId` on the line and `purchaseId` / `purchaseItemId` on the piece; cost comes from `pieceCost()`. See the `hallmark-qr-tags` skill for HUID and QR details.
+
+## Sample data
+
+`src/js/sample.js` builds a believable shop (customers, suppliers, purchase bills with payments, stock, invoices over months) with `sample:true` on every record, so it can be removed cleanly. Edit the `SAMPLE_*` tables at the top to change what it contains; keep every stock key sold at most once, dates not in the future, and payments within totals (the smoke test checks all of these). When you add a new collection or a new link between records, teach `removeSample()` to keep what real records point at, and `loadSample()` to fill it. Rates: the owner enters 24K and silver; 22K is 92% and 18K 75% of 24K (`SAMPLE_PCT`).
 
 ## Look and feel (Apple style)
 

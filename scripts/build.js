@@ -5,7 +5,7 @@ const root = path.join(__dirname, '..'), src = p => fs.readFileSync(path.join(ro
 
 const CSS = ['base', 'layout', 'components', 'invoice-sheet'].map(n => `styles/${n}.css`);
 const JS = ['util', 'qr', 'calc', 'data', 'storage', 'router', 'auth',
-  'routes/invoices', 'routes/customers', 'routes/inventory', 'routes/purchases', 'routes/item', 'routes/analytics', 'routes/settings', 'routes/users', 'routes/stores', 'pdf', 'main'].map(n => `js/${n}.js`);
+  'routes/invoices', 'routes/customers', 'routes/inventory', 'routes/purchases', 'routes/item', 'routes/analytics', 'routes/settings', 'routes/users', 'routes/stores', 'sample', 'pdf', 'main'].map(n => `js/${n}.js`);
 
 function bundle() {
   const shell = src('index.html');

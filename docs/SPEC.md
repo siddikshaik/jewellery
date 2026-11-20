@@ -4,12 +4,29 @@ Jewellery shop owner or counter staff bill customers for gold and silver items, 
 
 The app serves several stores. People sign in; what they see depends on their role. Super admin runs the platform and can watch every store. A store admin runs one store. Store users get only the areas their admin gives them.
 
+## Sign-up, licence and people limits
+
+- **Store sign-up** is open to anyone from the sign-in screen ("Create an account"). It asks for store name, name, email, phone, username and password. The person becomes the **store owner** (role `admin`) of a new store with a **free trial of one month and up to 2 users**. It can be switched off with the environment variable `SIGNUP=off`; sign-up is also refused until the super admin account exists. At most 5 sign-ups per hour from one address. There is no email verification (the app does not send mail), so the super admin should watch the Stores page.
+- **Email and phone** are required for every new account and must be unique across the whole platform. Email ignores capitals; phone is stored as 10 digits, so `+91 98765 43210`, `098765 43210` and `9876543210` are the same number. Older accounts without them keep working and can add them on the Account page. People sign in with their username, email or phone number.
+- **Licence.** Each store has a plan (free trial or licensed), a valid-until date (or no expiry) and a number of users allowed. The store works through the end of the valid-until day. After that the store is **read-only**: its people can sign in, look at everything and download a backup, but cannot change anything or add people, and a banner tells them to contact the super admin (name, phone and email shown). A week before the end a warning banner appears. The state is re-checked every 20 seconds, so a renewal reaches people who are signed in.
+- **People limit.** A store may have 2 people turned on (owner included) unless the super admin allows more. Turning someone off frees a place. At the limit the Add user button is off and the owner is told to contact the super admin.
+- **The super admin** sets all of this per store on Stores → License: extend by 1, 3, 6 or 12 months, set an exact date or no expiry, set users allowed, plan and a private note. The Stores page lists every store's plan, expiry (with days left), and people used. New stores created by the super admin default to one month and two users, and can be changed in the form.
+- Existing stores (made before licences) have no expiry until the super admin sets one.
+
+## Sample data
+
+- A **store owner** can fill the store with sample data to look around, and take it away again. It lives in one place only: **Settings → Sample data**. Nothing about it appears on the landing page or any other page.
+- It asks for only two numbers: the **24K gold rate** and the **silver rate** (both per gram). **22K = 24K × 92%** and **18K = 24K × 75%**, shown as the owner types and saved as Today's rates (rounded to paise). 14K and 9K are left as they were. All rates can be changed afterwards in Settings → Rates. If real rates were saved before, the form says they will be replaced.
+- It adds 6 customers, 3 suppliers, 6 purchase bills with payments (paid, part-paid, unpaid), 18 stock pieces (15 bought through the bills with their cost, 3 not; some without a HUID; different ages; 9 sold and 9 in stock) and 14 invoices over the last months (paid, part-paid, unpaid; some sold from stock, some typed in). Purchases, Inventory and all four Analytics tabs have numbers. Bills and invoices are numbered after any existing ones. Sample HUIDs look like `SMP001`.
+- Every sample record is marked **Sample** (a small grey tag in the lists). The Settings tab shows the form while there is none, and **Remove sample data** (asks twice; the first click is forgotten if you leave the page) once it is loaded. Removal deletes only the marked records. If the owner's own records depend on a sample one (an invoice for a sample customer or piece, a bill from a sample supplier), that record, the other pieces of its bill and its supplier are **kept** and become normal records; the message says how many. Rates are not touched.
+- Only the store owner sees the tab (and can open the page); team members, stores whose license has ended, and the super admin watching a store do not. If the store already has records, the form says the sample data is added next to them.
+
 ## Sign-in and roles
 
 - First start: the page asks for a super admin (name, username, password of 8 or more characters). After that, nobody can self-register.
 - Sign in with username and password. A session lasts 12 hours. Five wrong passwords lock that username and address for five minutes. Signing out ends it.
 - **Super admin**: adds stores (each with a first store admin), adds and edits users in any store, turns a store or user off. Opens any store **read-only** from the Stores page to see its settings, rates, invoices, customers, inventory and analytics. Never changes store data. The Stores page shows each store's sales (this month, all time), collected, outstanding, customers, stock and last invoice.
-- **Store admin**: full access to their own store: invoices, customers, inventory, analytics, settings and rates, and adding or editing users of their store (store users only).
+- **Store owner** (role `admin`; the person who signed up, or the first person the super admin created for the store): full access to their own store: invoices, customers, inventory, analytics, settings and rates, and adding or editing users of their store (store users only).
 - **Store user**: for each of Invoices, Customers, Inventory, Purchases the admin picks *No access*, *View only* or *View and edit*. Purchases covers suppliers too. Adding a bought piece to stock also needs Inventory *View and edit*. Analytics shows the tabs the person can see (Sales needs Invoices, Purchases needs Purchases, Inventory needs Inventory, Profit & GST needs Invoices and Purchases). Users cannot open Settings or Users. People with Invoices access can always read customer names, today's rates and store settings so they can bill; adding a customer needs Customers *View and edit*; changing rates is admin-only.
 - Turning a user or a store off signs them out on their next action.
 - Users change their own password on the Account page. Admins can set a new password for their users.
@@ -34,9 +51,11 @@ The app serves several stores. People sign in; what they see depends on their ro
 | `#/settings/invoicing` | Default Central and State GST, invoice prefix, start numbering from, terms, default template, "do not allow billing a gold item without its HUID"; purchase GST defaults, prefix and start number. |
 | `#/settings/preferences` | Payment modes, quick-add charge names, light/dark for this device. |
 | `#/settings/data` | Download a backup of this store, restore from one. |
-| `#/users`, `#/users/new`, `#/users/<id>` | Admin and super admin only. List, add, edit, reset password, turn off, set the three roles. |
-| `#/stores`, `#/stores/new` | Super admin only. All stores with their numbers; Open (read-only), Turn off / on, Add store. |
-| `#/account` | Your details, change password, sign out. |
+| `#/settings/sample` | Store owner only. Load sample data (asks for the 24K gold rate and the silver rate; 22K = 92% and 18K = 75% of 24K are worked out) or remove it. |
+| `#/users`, `#/users/new`, `#/users/<id>` | Store owner and super admin only. List (with email and phone), add, edit, reset password, turn off, set the four roles. Shows "N of M places used" for an owner. |
+| `#/stores`, `#/stores/new` | Super admin only. All stores with their numbers, licence and owner contact; Open (read-only), License, Turn off / on, Add store (owner, licence). |
+| `#/account` | Your name, email and phone (editable, unique), license summary for store people, change password, sign out. |
+| `#/stores/<id>/license` | Super admin only. Extend, set valid-until, users allowed, plan, note. |
 
 The menu shows only what the person may open. Unknown or forbidden routes go to their first allowed page. While data is loading, a record page shows "Loading" instead of redirecting. While a super admin is looking at a store, a banner says so and every form is locked.
 

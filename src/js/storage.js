@@ -54,6 +54,10 @@ async function saveFailed(e){
     toast('That HUID is already on another piece, so the change was not saved.');
     try{await loadData();render()}catch(e3){}return;
   }
+  if(e.code==='license_expired'){
+    if(ME.license)ME.license.expired=true;
+    toast(e.message);try{await loadData();await refreshMe();renderNav();render()}catch(e4){}return;
+  }
   if(e.status===403){toast('You do not have permission to save that change');try{await loadData();render()}catch(e3){}return}
   if(e.status===401)return;
   setSync('Could not save. Will try again.');
@@ -74,7 +78,9 @@ let pollT=null;
 const startPolling=()=>{stopPolling();pollT=setInterval(poll,20000)};
 const stopPolling=()=>{clearInterval(pollT);pollT=null};
 async function poll(){
-  if(!ME||!ready||pendingSave()||draft||draftCust||draftStock||draftPur||draftSup||payOpen||(ME.role==='superadmin'&&!monitor))return;
+  if(!ME||!ready)return;
+  await refreshMe();   /* licence renewed or expired, store switched off, role changed */
+  if(!ME||pendingSave()||draft||draftCust||draftStock||draftPur||draftSup||payOpen||(ME.role==='superadmin'&&!monitor))return;
   const ae=document.activeElement;if(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName)&&$('#view').contains(ae))return;
   try{
     const r=await api('GET','data'+storeQ());
