@@ -1,0 +1,12 @@
+{
+  "name": "jewellery-billing-app",
+  "version": "1.0.0",
+  "description": "Gold and silver jewellery billing: customers, GST invoices, payments, analytics, PDF. Small source files built into one page; a few JSON files.",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.js",
+    "start": "node scripts/build.js && node server.js",
+    "test": "node test/smoke.js && node test/api.js"
+  },
+  "engines": { "node": ">=18" }
+}

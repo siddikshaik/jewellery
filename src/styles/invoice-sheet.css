@@ -1,0 +1,69 @@
+/* Invoice paper. Colours are fixed per template and do not follow the theme.
+   A template sets the --sh-* variables and a few layout overrides; the structure is shared. */
+.sheet{--sh-box:transparent;--sh-boxp:0px;--sh-totbg:var(--sh-tot);
+  border-radius:18px;padding:40px;display:flex;flex-direction:column;gap:24px;background:var(--sh-bg);color:var(--sh-ink);box-shadow:var(--shadow-lg);font-family:var(--body);letter-spacing:0;position:relative;overflow:hidden}
+.sheet .store{font:700 28px/1.12 var(--display);color:var(--sh-accent);letter-spacing:-.01em}
+.sheet .sm{font-size:12.5px;line-height:1.5;color:var(--sh-muted);white-space:pre-line}
+.sheet .tag{font:700 12px var(--body);letter-spacing:.24em;text-transform:uppercase;color:var(--sh-accent)}
+.sheet .head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:20px}
+.sheet .brandrow{display:flex;align-items:center;gap:18px;min-width:0}
+.sheet .logo-tile{display:flex;align-items:center;justify-content:center;flex:none;border-radius:14px;max-width:170px}
+.sheet .logo-tile img{display:block;max-height:68px;max-width:170px;object-fit:contain}
+.sheet .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.sheet .meta .box{background:var(--sh-box);padding:var(--sh-boxp);border-radius:14px}
+.sheet .box h4{margin:0 0 6px;font:600 10.5px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--sh-muted)}
+.sheet .box b{font-weight:600}
+.sheet table{font-size:12.5px}
+.sheet td .sm{font-size:11px}
+.sheet .huid-line{font-weight:600;letter-spacing:.04em;color:var(--sh-accent)}
+.sheet th{background:var(--sh-th);color:var(--sh-thc);border:0;padding:10px 8px;font:600 10.5px/1.25 var(--body);letter-spacing:.05em;text-transform:uppercase}
+.sheet th:first-child{border-radius:10px 0 0 10px;padding-left:12px}
+.sheet th:last-child{border-radius:0 10px 10px 0;padding-right:12px;text-align:right}
+.sheet td{border-bottom:1px solid var(--sh-line);padding:11px 8px;font-variant-numeric:tabular-nums}
+.sheet td:first-child{padding-left:12px}
+.sheet td:last-child{padding-right:12px;text-align:right}
+.sheet tbody tr:nth-child(even) td{background:var(--sh-zebra)}
+.sheet tfoot td{font-weight:700;border-bottom:0;border-top:1.5px solid var(--sh-accent);padding-top:12px}
+.sheet .bd{margin-left:auto;width:100%;max-width:390px;display:flex;flex-direction:column;gap:7px;font-variant-numeric:tabular-nums}
+.sheet .bd div{display:flex;justify-content:space-between;gap:12px;font-size:13px}
+.sheet .bd .sep{border-top:1px solid var(--sh-line);padding-top:8px;margin-top:3px;font-weight:600}
+.sheet .bd .tot{background:var(--sh-totbg);color:var(--sh-totc);padding:14px 18px;border-radius:14px;font:700 20px var(--display);margin-top:6px;box-shadow:0 6px 18px -8px rgba(0,0,0,.35)}
+.sheet .foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:flex-end;font-size:12px;line-height:1.5;color:var(--sh-muted);border-top:1px solid var(--sh-line);padding-top:16px}
+.sheet .sign{text-align:center;min-width:170px;border-top:1px solid var(--sh-muted);padding-top:6px}
+.sheet .below{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;align-items:start}
+.sheet .pill{font-size:10.5px;padding:3px 11px}
+.sheet .pill.paid{background:#dff1e6;color:#1f7a4d}.sheet .pill.due{background:#fbe3e0;color:#b3372f}
+
+/* Classic: warm ivory, double gold keyline, centred masthead */
+.t-classic{--sh-bg:linear-gradient(180deg,#fffef9,#fdf8ea);--sh-ink:#2a2415;--sh-muted:#7a6e52;--sh-accent:#8a6a1f;--sh-line:#ece2c4;--sh-th:#f5ecce;--sh-thc:#5a4510;--sh-zebra:rgba(245,236,206,.35);--sh-tot:#efdca0;--sh-totbg:linear-gradient(135deg,#f8efcc,#e9d28c);--sh-totc:#4a3a10;
+  padding:48px;box-shadow:var(--shadow-lg),inset 0 0 0 1px #d9c48a,inset 0 0 0 8px #fffef9,inset 0 0 0 9px #e6d49a}
+.t-classic .head{flex-direction:column;align-items:center;text-align:center;border-bottom:1px solid #d9c48a;padding-bottom:20px;position:relative}
+.t-classic .head::after{content:"";position:absolute;left:0;right:0;bottom:-5px;border-bottom:1px solid #ecdfb3}
+.t-classic .brandrow{flex-direction:column;gap:12px;text-align:center}
+.t-classic .tagbox{text-align:center!important}
+.t-classic .tag{letter-spacing:.34em}
+.t-classic .store{font-size:32px;font-style:italic}
+.t-classic .box h4{color:#a08a4c}
+
+/* Modern: white card, deep-blue gradient masthead, soft tinted panels */
+.t-modern{--sh-bg:#ffffff;--sh-ink:#18202f;--sh-muted:#667089;--sh-accent:#2a4585;--sh-line:#e8ecf4;--sh-th:#eef2fb;--sh-thc:#2a4585;--sh-zebra:#f8faff;--sh-tot:#2a4585;--sh-totbg:linear-gradient(135deg,#223a73,#4467b4);--sh-totc:#ffffff;--sh-box:#f5f7fc;--sh-boxp:16px;padding:0;gap:26px}
+.t-modern>*{margin-inline:36px}
+.t-modern .head{margin:0;padding:30px 36px;background:linear-gradient(135deg,#1c2f5c,#3d5fae);color:#fff;border-radius:0}
+.t-modern .head .store,.t-modern .head .sm,.t-modern .head .tag{color:#fff}
+.t-modern .head .sm{opacity:.82}
+.t-modern .tag{background:rgba(255,255,255,.16);padding:7px 14px;border-radius:99px;letter-spacing:.2em}
+.t-modern .logo-tile{background:#fff;padding:8px 12px;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.t-modern th{color:#2a4585}
+.t-modern .foot{margin-bottom:32px}
+
+/* Elegant: black glass, champagne-gold gradient accents */
+.t-elegant{--sh-bg:linear-gradient(160deg,#1b1c21,#0e0f12 70%);--sh-ink:#ece6d4;--sh-muted:#a19b85;--sh-accent:#d9b84f;--sh-line:#2c2d34;--sh-th:rgba(217,184,79,.1);--sh-thc:#d9b84f;--sh-zebra:rgba(255,255,255,.025);--sh-tot:#d9b84f;--sh-totbg:linear-gradient(135deg,#f3dc92,#c79d33);--sh-totc:#16130a;--sh-box:rgba(255,255,255,.04);--sh-boxp:16px;
+  box-shadow:var(--shadow-lg),inset 0 0 0 1px rgba(217,184,79,.28)}
+.t-elegant::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,transparent,#f3dc92,#c79d33,transparent)}
+.t-elegant .head{border-bottom:1px solid rgba(217,184,79,.35);padding-bottom:22px}
+.t-elegant .store{letter-spacing:.03em;background:linear-gradient(135deg,#f6e3a2,#d2a93e 55%,#b8892b);-webkit-background-clip:text;background-clip:text;color:transparent}
+.t-elegant .logo-tile{background:rgba(255,255,255,.96);padding:7px 12px;border-radius:14px}
+.t-elegant .tag{border:1px solid rgba(217,184,79,.5);padding:7px 14px;border-radius:99px}
+.t-elegant .pill.paid{background:rgba(48,209,88,.16);color:#5fd68a}.t-elegant .pill.due{background:rgba(255,69,58,.16);color:#ff8a80}
+.t-elegant .sign{border-top-color:rgba(217,184,79,.5)}
+@media (max-width:600px){.sheet{padding:22px}.t-classic{padding:30px}.t-modern>*{margin-inline:20px}.t-modern .head{padding:22px 20px}}
